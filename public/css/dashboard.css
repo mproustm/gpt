@@ -1,0 +1,596 @@
+/*  ╔══════════════════════════════════════════════════════════════════════╗
+    ║  📁  DASHBOARD THEME – LIGHT / DARK                                  ║
+    ║  ------------------------------------------------------------------  ║
+    ║  • يعتمد على متغيّرات CSS (‏:root) مع كتلة body.dark-mode            ║
+    ║  • يغطّي: Reset - Sidebar - Topbar - Content cards - Tables …إلخ     ║
+    ║  • لا تغييرات في الألوان أو الأحجام الأصليّة — فقط توثيق وتنظيم      ║
+    ╚══════════════════════════════════════════════════════════════════════╝ */
+
+/* -----------------------------------------------------------------------
+   0) RESET - الأساسيات العامة
+   -------------------------------------------------------------------- */
+ *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+ body{
+   font-family:'Cairo',sans-serif;
+   direction:rtl;
+   background:#f4f7fc;            /* خلفيّة الموقع (Light) */
+   color:#374151;                 /* لون النص الأساسي (Light) */
+   background:var(--bg);          /* ← يعتمد على المتغيّر (فاتح أو داكن) */
+   color:var(--text);             /* ← يعتمد على المتغيّر (فاتح أو داكن) */
+   line-height:1.7;
+   font-size:15px;
+   overflow-x:hidden;
+   transition:background .25s,color .25s;
+ }
+
+a{
+  color:#0e7f5d;                 /* أخضر الهوية */
+  text-decoration:none;
+  transition:.3s;
+}
+a:hover{color:#315a4d}
+
+.wrapper{display:flex;min-height:100vh}
+
+/* -----------------------------------------------------------------------
+   1) متغيّرات السِمة (الوضع الفاتح) – :root
+   -------------------------------------------------------------------- */
+:root{
+  /* تحكّم كامل بالألوان من مكان واحد */
+  --bg             : #f4f7fc;
+  --surface        : #ffffff;
+  --border         : #e5e7eb;
+  --text           : #374151;
+  --text-soft      : #6b7280;
+
+  --accent-green   : #0e7f5d;    /* الأخضر الأصلي (روابط) */
+  --accent-gold    : #e6bd45;    /* اللون الذهبي الجديد */
+
+  --shadow         : 0 4px 6px -1px rgba(0,0,0,.08);
+  --shadow-lg      : 0 8px 12px -2px rgba(0,0,0,.10);
+
+  /* جدول – لون شريط خفيف لكل صف فردي */
+  --table-stripe   : rgba(0,255,179,.04);
+
+  /* Sidebar state */
+  --sidebar-expanded : 230px;
+  --sidebar-collapsed:  80px;
+}
+
+/* -----------------------------------------------------------------------
+   2) متغيّرات الوضع الداكن – body.dark-mode
+   -------------------------------------------------------------------- */
+body.dark-mode{
+  --bg             : #11171a;
+  --surface        : #1b2227;
+  --border         : #2b343a;
+  --text           : #e5e7eb;
+  --text-soft      : #9ca3af;
+
+  --shadow         : 0 4px 6px -1px rgba(0,0,0,.40);
+  --shadow-lg      : 0 8px 12px -2px rgba(0,0,0,.45);
+
+  --table-stripe   : rgba(230,189,69,.05); /* ذهبي خافت */
+
+  /* تدرّجات رصاصية لصفوف الجدول */
+  --row-dark       : #5253537d;
+  --row-light      : #525353;
+
+  --heading-color  : #ffffff;    /* عناوين بيضاء */
+}
+
+/* -----------------------------------------------------------------------
+   3) SIDEBAR – الشريط الجانبي
+   -------------------------------------------------------------------- */
+.sidebar{
+  width:var(--sidebar-expanded);
+  background:var(--surface);
+  color:var(--text);
+  position:fixed;right:0;top:0;bottom:0;
+  overflow-y:auto;
+  box-shadow:-3px 0 15px rgba(0,0,0,.06);
+  border-top-left-radius:16px;border-top-right-radius:16px;
+  transition:width .3s ease,background .25s,color .25s;
+}
+
+/* عند الطيّ (ديسكتوب) */
+.sidebar.sidebar-collapsed{
+  width:var(--sidebar-collapsed);
+}
+.sidebar.sidebar-collapsed .link-text{display:none}
+
+/* شعار داخل الشريط */
+.sidebar-brand{
+  padding:.75rem 1rem;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  border-bottom:1px solid var(--border);
+}
+.logo-img{width:110px;border-radius:8px;transition:.3s}
+.logo-img:hover{transform:scale(1.05)}
+
+/* قائمة الروابط */
+.sidebar-nav{padding:.65rem}
+.nav-link{
+  display:flex;align-items:center;gap:.8rem;
+  padding:.7rem 1rem;border-radius:8px;
+  color:var(--text);font-weight:600;white-space:nowrap;
+  transition:background .25s,color .25s;
+}
+.nav-link:hover{background:var(--bg);color:#315a4d}
+.nav-link.active{background:rgba(215,215,215,.2);color:#315a4d}
+
+/* تخصيص ألوان الروابط في الدارك مود */
+body.dark-mode .sidebar .nav-link,
+body.dark-mode .sidebar .nav-link i{
+  color:#ffffff !important;
+}
+body.dark-mode .sidebar .nav-link:hover,
+body.dark-mode .sidebar .nav-link.active{
+  background:rgba(255,255,255,.08);
+  color:#ffffff !important;
+}
+
+/* زرّ الهامبرغر (موبايل + ديسكتوب) */
+.hamburger{
+  position:fixed;top:1rem;right:1rem;z-index:1100;
+  width:40px;height:40px;background:transparent;border:none;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  padding:.5rem;
+}
+.hamburger span,
+.hamburger span::before,
+.hamburger span::after{
+  content:"";display:block;width:26px;height:3px;
+  background:var(--accent-gold);border-radius:2px;
+  transition:transform .3s,opacity .3s;
+}
+.hamburger span::before{transform:translateY(-8px)}
+.hamburger span::after {transform:translateY( 8px)}
+.hamburger.active span{background:transparent}
+.hamburger.active span::before{transform:rotate(45deg)}
+.hamburger.active span::after {transform:rotate(-45deg)}
+
+/* -----------------------------------------------------------------------
+   4) MAIN CONTENT – المحتوى الرئيسي
+   -------------------------------------------------------------------- */
+.main-content{
+  flex-grow:1;
+  padding:2rem;
+  margin-right:var(--sidebar-expanded);
+  transition:margin .3s;
+}
+body.sidebar-collapsed .main-content{margin-right:var(--sidebar-collapsed)}
+
+/* -----------------------------------------------------------------------
+   5) TOPBAR – الشريط العلوي
+   -------------------------------------------------------------------- */
+.topbar{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:.45rem 1rem;
+  margin-bottom:1.5rem;
+  display:flex;align-items:center;
+  box-shadow:var(--shadow);
+  transition:background .25s,border-color .25s;
+}
+.page-title{
+  font-size:1.15rem;font-weight:700;
+  color:var(--text);
+}
+body.dark-mode .page-title,
+body.dark-mode .topbar *{color:#ffffff !important}
+
+.theme-toggle-btn{
+  background:none;border:none;font-size:1.3rem;
+  color:var(--text);margin-inline:auto;cursor:pointer;transition:.25s;
+}
+body.dark-mode .theme-toggle-btn{color:#ffffff !important}
+
+.user-avatar{
+  width:38px;height:38px;border-radius:50%;object-fit:cover;
+  border:2px solid var(--accent-green);
+}
+
+/* -----------------------------------------------------------------------
+   6) TABS & FORM CONTROLS – التبويبات والحقول
+   -------------------------------------------------------------------- */
+.nav-pills .nav-link{
+  border-radius:8px;font-weight:600;
+  background:#f4f7fc;border:1px solid #e5e7eb;
+  margin-left:.5rem;padding:.7rem 1.2rem;
+}
+.nav-pills .nav-link.active{
+  background:var(--accent-gold);border-color:var(--accent-gold);color:#fff;
+}
+
+.form-label{font-weight:600;font-size:.95rem;margin-bottom:.5rem;color:var(--text)}
+.form-control,.form-select{
+  border-radius:6px;border:1px solid #e5e7eb;
+  padding:.6rem .9rem;font-size:.95rem;
+}
+.form-control:focus,.form-select:focus{
+  border-color:var(--accent-green);
+  box-shadow:0 0 0 .2rem rgba(14,127,93,.25);
+}
+/* جعل نصّ التبويب غير النشط أسود في الوضع الداكن */
+body.dark-mode .nav-pills .nav-link{
+  color:#000000 !important;      /* أسود واضح على الخلفيّة الفاتحة */
+}
+
+/* -----------------------------------------------------------------------
+   7) CARDS & TABLES – البطاقات والجداول
+   -------------------------------------------------------------------- */
+.content-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:8px;
+  box-shadow:var(--shadow);
+  padding:1.5rem;margin-bottom:1.5rem;
+  transition:background .25s,border-color .25s,box-shadow .25s;
+}
+.content-card-header{
+  font-size:1.1rem;font-weight:600;color:#315a4d;
+  border-bottom:1px solid var(--border);
+  padding-bottom:.75rem;margin-bottom:1rem;
+  display:flex;align-items:center;gap:.5rem;
+}
+body.dark-mode .content-card-header{color:#ffffff !important}
+
+/* جداول */
+.table{
+  width:100%;border-collapse:collapse;
+  background:var(--surface);
+  border-radius:8px;overflow:hidden;
+  box-shadow:var(--shadow);
+  transition:background .25s;
+}
+.table th,.table td{
+  padding:.9rem 1rem;text-align:center;vertical-align:middle;
+  border-bottom:1px solid var(--border);
+}
+.table th{
+  background:var(--accent-gold);color:#fff;font-weight:600;
+}
+
+/* تدرّج صفوف (Light & Dark عبر المتغيّرات) */
+.table tbody tr:nth-child(odd)>* {background:var(--row-dark, var(--table-stripe))}
+.table tbody tr:nth-child(even)>*{background:var(--row-light, #fff)}
+/* عدم تغيير الخلفية عند hover في الدارك */
+.table tbody tr:hover>*{background:rgba(0,0,0,.06)}
+body.dark-mode .table tbody tr:hover>*{background:inherit !important}
+/* احرص على تلوين النص في الدارك */
+body.dark-mode .table th,
+body.dark-mode .table td{color:#ffffff !important}
+
+/* ================= بطاقات الإحصاء بالشكل الجديد ================ */
+:root{
+    --rased-gold: #e6bd45;   /* الذهبي المستخدم في الأيقونة */
+}
+
+.stats-card{
+    display:flex;                 /* تخطيط أفقي */
+    flex-direction:row-reverse;   /* RTL: الأيقونة في اليمين */
+    align-items:center;
+    justify-content:space-between;
+    gap:1.25rem;
+
+    padding:1.75rem 1.25rem;
+    background:#ffffff;
+    border:1px solid #e5eaf2;
+    border-radius:12px;
+    box-shadow:0 3px 12px rgba(0,0,0,.06);
+    transition:box-shadow .25s ease;
+}
+.stats-card:hover{
+    box-shadow:0 6px 20px rgba(0,0,0,.08);
+}
+
+/* الدائرة الذهبية */
+.stats-icon{
+    flex:0 0 64px;
+    width:64px;height:64px;
+    border-radius:50%;
+    background:var(--rased-gold);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.55rem;
+    color:#fff;
+}
+
+/* النصوص */
+.stats-info     { flex:1; text-align:center; }
+.stats-label    { font-size:.95rem; font-weight:600; color:#4a5568; }
+.stats-value    { font-size:2rem;  font-weight:700; margin:4px 0; color:#1f2937;}
+.stats-subvalue { font-size:.9rem; color:#607d8b; }
+
+/* الوضع الداكن – نفس بطاقاتك القديمة */
+body.dark-mode .stats-card{
+    background:#1B2227;
+    border-color:#30363d;
+}
+body.dark-mode .stats-label,
+body.dark-mode .stats-subvalue{ color:#cbd5e1; }
+body.dark-mode .stats-value   { color:#fff; }
+
+
+/* -----------------------------------------------------------------------
+   8) BADGES & BUTTONS – الشارات والأزرار
+   -------------------------------------------------------------------- */
+.notify-badge{
+  position:absolute;top:-4px;left:-4px;
+  min-width:20px;height:20px;padding:0 5px;
+  border-radius:50%;background:#dc2626;color:#fff;
+  font-size:12px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* أزرار رئيسية ملوّنة بالذهبي */
+.btn-success,
+.btn-secondary{
+  background:var(--accent-gold);border-color:var(--accent-gold);color:#fff;
+}
+.btn-success:hover,.btn-success:focus,
+.btn-secondary:hover,.btn-secondary:focus{
+  filter:brightness(.9);
+}
+
+/* شارات الحالة */
+.status-badge{padding:.3em .8em;border-radius:20px;font-weight:600;font-size:.8rem}
+.status-active  {background:rgba(22,163,74,.15);color:#16a34a}
+.status-inactive{background:rgba(220,38,38,.15);color:#dc2626}
+.status-archived{background:rgba(107,114,128,.15);color:#6b7280}
+
+
+
+/* -----------------------------------------------------------------------
+   9) DROPDOWN FIX – قائمة الحساب في الوضع الداكن
+   -------------------------------------------------------------------- */
+body.dark-mode .dropdown-menu{
+  background:#1b2227 !important;
+  border:1px solid #2b343a !important;
+  box-shadow:0 4px 6px -1px rgba(0,0,0,.45);
+}
+body.dark-mode .dropdown-menu .dropdown-item{color:#ffffff !important}
+body.dark-mode .dropdown-menu .dropdown-item:hover,
+body.dark-mode .dropdown-menu .dropdown-item:focus{
+  background:rgba(255,255,255,.08) !important;
+  color:#ffffff !important;
+}
+body.dark-mode .dropdown-menu .dropdown-divider{
+  background-color:#2b343a !important;
+}
+
+/* -----------------------------------------------------------------------
+   10) RESPONSIVE – إخفاء الشريط في الشاشات الصغيرة
+   -------------------------------------------------------------------- */
+@media(max-width:767.98px){
+  .sidebar{display:none}
+  .sidebar-toggle-btn{display:flex}
+  .main-content{margin-right:0;padding:1.5rem}
+  body.sidebar-mobile-open .sidebar{display:block}
+}
+
+/* -----------------------------------------------------------------------
+   11) UTILITIES – أزرار أخرى، هوفر الروابط…إلخ
+   -------------------------------------------------------------------- */
+a:hover{color:#315a4d}
+a:hover,
+body.dark-mode a:hover{color:#c59d36}
+
+
+/* ────────────────────────────────────────────────
+ *  dashboard-theme.css   (Light + Dark)
+ * ────────────────────────────────────────────────*/
+
+/* 1) متغيّرات الأساس (وضع فاتح) */
+:root{
+    --bg          : #f4f7fc;         /* خلفيّة عامة */
+    --surface     : #ffffff;         /* صناديق / Sidebar */
+    --border      : #e5e7eb;
+    --text        : #374151;
+    --text-soft   : #6b7280;
+    --accent-gold : #e6bd45;
+
+    --shadow      : 0 4px 6px -1px rgba(0,0,0,.08);
+    --chart-bg    : #fafafa;         /* خلفيّة الرسم */
+}
+
+/* 2) وضع داكن – يُفعَّل بإضافة ‎.dark-mode‎ إلى <body> */
+body.dark-mode{
+    --bg        : #11171a;
+    --surface   : #1b2227;
+    --border    : #2b343a;
+    --text      : #e5e7eb;
+    --text-soft : #9ca3af;
+    --shadow    : 0 4px 6px -1px rgba(0,0,0,.4);
+    --chart-bg  : #202225;
+}
+
+/* 3) عناصر عامة */
+body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;line-height:1.7;transition:.25s}
+a{color:var(--accent-gold);text-decoration:none}
+a:hover{opacity:.8}
+
+/* 4) الصناديق والبطاقات */
+.content-box,.stats-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:8px;
+    box-shadow:var(--shadow);
+    transition:.25s;
+}
+.content-box{padding:1rem .75rem;display:flex;flex-direction:column;margin-bottom:1rem}
+.content-box h2{font-size:1rem;margin-bottom:.45rem;display:flex;align-items:center;gap:.35rem}
+.stats-card{display:flex;align-items:center;justify-content:space-between;padding:1.5rem 1.25rem;margin-bottom:1rem}
+
+.stats-icon{flex:0 0 64px;width:64px;height:64px;border-radius:50%;background:var(--accent-gold);display:flex;align-items:center;justify-content:center;font-size:1.55rem;color:#fff}
+
+/* 5) حاوية الرسم */
+.chart-wrapper{position:relative;width:100%;height:220px;overflow:hidden;background:var(--chart-bg);border-radius:6px}
+@media(max-width:576px){.chart-wrapper{height:180px}}
+.chart-wrapper canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
+
+/* 6) جدول مخطط Legend (إن كنت تستخدم HTML-Legend plugin) */
+.chartjs-legend{display:flex!important;justify-content:center;flex-wrap:wrap;gap:.5rem;margin-top:.35rem;font-size:.75rem;list-style:none}
+.chartjs-legend li{display:flex;align-items:center;gap:.25rem}
+.chartjs-legend li span{width:12px;height:12px;border-radius:2px}
+/* ── DARK-MODE overrides ───────────────────────────────────── */
+body.dark-mode{
+    /* خلفيّة المربعات (cards / content-box) */
+    --surface   : #161b20;    /* أدكن قليلاً من الـ sidebar */
+    /* خلفيّة الرسم */
+    --chart-bg  : #101418;    /* نفس درجة الخلفيّة تقريباً */
+    /* خطوط حدّ خفيفة للجداول */
+    --border    : #283039;
+}
+
+/* الصناديق */
+body.dark-mode .content-box,
+body.dark-mode .stats-card{
+    background:var(--surface);
+    border-color:var(--border);
+}
+
+/* حاوية الرسم */
+body.dark-mode .chart-wrapper{
+    background:var(--chart-bg);
+}
+
+/* جدول الرأس والصفوف */
+body.dark-mode .table{
+    background:var(--surface);
+    color:#e5e7eb;
+}
+body.dark-mode .table th{
+    background:#252c34;             /* رأس جدولة أدكن */
+    border-color:#252c34;
+}
+body.dark-mode .table tbody tr> *{
+    border-color:#283039;            /* خطوط باهتة */
+}
+body.dark-mode .table tbody tr:nth-child(odd)>*{
+    background:#1d2329;              /* تقطيع خفيف */
+}
+body.dark-mode .table tbody tr:nth-child(even)>*{
+    background:#20272d;
+}
+/* تعطيل تأثير hover الفاتح */
+body.dark-mode .table tbody tr:hover>*{
+    background:#282f36 !important;
+}
+/* ── إجبار صفّ الترويسة ليظلّ باللون الذهبي ───────────────── */
+.table th{
+    background:var(--accent-gold);
+    border-color:var(--accent-gold);
+    color:#ffffff;
+}
+
+/* فى الوضع الداكن كان يتمّ استبداله بلون رمادي؛
+   هذه القاعدة الأقوى (بعدها في ملفّك) تُعيده إلى الأصفر. */
+body.dark-mode .table th{
+    background:var(--accent-gold) !important;
+    border-color:var(--accent-gold) !important;
+    color:#ffffff !important;
+}
+
+/* ── override: صفّ الترويسة دائمًا ذهبى ──────────────────────*/
+.table th{
+    background:#e6bd45 !important;  /* الذهبي */
+    border-color:#e6bd45 !important;
+    color:#fff !important;
+}
+
+/* ── الوضع الداكن: الصناديق + الجداول + الرسم ───────────────*/
+body.dark-mode{
+    --surface  : #161b20;
+    --border   : #283039;
+    --chart-bg : #101418;
+}
+
+/* الصناديق والجداول تأخذ المتغيّرات المُعدَّلة */
+body.dark-mode .content-box,
+body.dark-mode .stats-card,
+body.dark-mode .table{
+    background:var(--surface);
+    border-color:var(--border);
+    color:#e5e7eb;
+}
+
+/* خلفية حاوية الرسم */
+body.dark-mode .chart-wrapper{background:var(--chart-bg);}
+
+
+/* ==== تحسين مظهر القائمة فقط ==== */
+.export-print .dropdown-menu{
+    min-width: 190px;
+    background-color: var(--surface, #fff);
+    border: 1px solid var(--border, #e5e7eb);
+}
+
+.export-print .dropdown-header{
+    font-size: .75rem;
+    font-weight: 700;
+    opacity: .6;
+    padding: .35rem 1rem;
+    pointer-events: none;
+}
+
+.export-print .dropdown-item{
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .5rem .95rem;
+    font-weight: 500;
+}
+
+.export-print .dropdown-item:hover,
+.export-print .dropdown-item:focus{
+    background-color: rgba(0,0,0,.04);
+}
+body.dark-mode .export-print .dropdown-item:hover,
+body.dark-mode .export-print .dropdown-item:focus{
+    background-color: rgba(255,255,255,.06);
+}
+
+/* إبراز الأيقونات */
+.export-print .fa-fw{width:1em;text-align:center}
+
+/* تصغير السهم الأخير */
+.export-print button .fa-chevron-down{font-size:.7rem;margin-inline-start:auto}
+
+
+/* الشكل الافتراضى (فاتح) */
+.form-control-year{
+    width: 80px;                  /* ثَبّت العرض */
+    min-height: 42px;             /* يساوى ارتفاع بطاقاتك الصغيرة */
+    text-align: center;           /* الرقم فى المنتصف */
+    font-weight: 700;             /* أسمك قليلاً */
+    border: 2px solid var(--border,#e5e7eb);
+    border-radius: .75rem;        /* زوايا دائرية أوضح */
+    background:#ffffff;
+    box-shadow:0 1px 3px rgba(0,0,0,.07) inset;
+}
+
+/* عند التركيز */
+.form-control-year:focus{
+    border-color: var(--accent-gold,#e6bd45);
+    box-shadow:0 0 0 2px rgba(230,189,69,.25);
+}
+
+/* الوضع الداكن */
+body.dark-mode .form-control-year{
+    background:#1b2227;
+    border-color:#2b343a;
+    color:#e5e7eb;
+    box-shadow:none;
+}
+body.dark-mode .form-control-year:focus{
+    border-color:#e6bd45;
+    box-shadow:0 0 0 2px rgba(230,189,69,.35);
+}
+
+/* إزالة سهم Datalist / Select فى Edge */
+input[list]::-webkit-calendar-picker-indicator{display:none !important}
+select.form-control-year{padding-inline-end:1.25rem}   /* لو بقيت على <select> */
